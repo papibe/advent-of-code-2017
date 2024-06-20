@@ -166,5 +166,5 @@ cython_debug/
 #
 
 # templace
-./python/day00
+python/day00
 
