@@ -10,6 +10,7 @@ mypy = "*"
 isort = "*"
 black = "*"
 ruff = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.11"
