@@ -1,74 +1,59 @@
-from math import sqrt, ceil
-from typing import Dict, List, Set, Tuple
+from typing import Dict, Iterator, Tuple
 
-def next_position(start_row: int, start_col: int, size: int):
-    yield (start_row, start_col)
+Coord = Tuple[int, int]
+Grid = Dict[Coord, int]
 
-    print("up")
-    for delta in range(1, size - 1):
-        yield start_row - delta, start_col
+DIRECTIONS = ((0, 1), (-1, 0), (0, -1), (1, 0))
 
-    print("left")
-    for delta in range(1, size):
-        yield start_row - size + 2, start_col - delta
 
-    print("down")
-    for delta in range(1, size):
-        yield start_row - size + 2 + delta, start_col - size + 1
+def next_position(row: int, col: int, size: int) -> Iterator[Coord]:
+    index: int = 0
+    steps: int = 1
+    while True:
+        for _ in range(2):
+            for _ in range(steps):
+                row += DIRECTIONS[index][0]
+                col += DIRECTIONS[index][1]
+                yield row, col
+            index = (index + 1) % len(DIRECTIONS)
+        steps += 1
 
-    print("right")
-    for delta in range(1, size):
-        yield start_row + 1, start_col - size + 1 + delta
 
-    print("done")
+def set_grid_value(grid: Grid, row: int, col: int) -> int:
+    return (
+        grid.get((row - 1, col - 1), 0)
+        + grid.get((row - 1, col), 0)
+        + grid.get((row - 1, col + 1), 0)
+        + grid.get((row, col - 1), 0)
+        + grid.get((row, col + 1), 0)
+        + grid.get((row + 1, col - 1), 0)
+        + grid.get((row + 1, col), 0)
+        + grid.get((row + 1, col + 1), 0)
+    )
 
 
 def solution(n: int) -> int:
+    grid: Grid = {}
 
-    grid: Dict[Tuple[int, int], int] = {(0,0): 1}
-
-    size: int = 1
     start_row: int = 0
-    start_col: int = 1
+    start_col: int = 0
 
-    counter: int = 0
+    side_size: int = 1
+    value: int = 1
+
+    grid[(0, 0)] = value
 
     while True:
-        size += 2
-        perimeter: int = 2 * size + 2 * (size - 2)
+        side_size += 2
 
-        for row, col in next_position(start_row, start_col, size):
-            value: int = (
-                grid.get((row - 1, col - 1), 0)
-                + grid.get((row - 1, col), 0)
-                + grid.get((row - 1, col + 1), 0)
-                + grid.get((row, col - 1), 0)
-                + grid.get((row, col + 1), 0)
-                + grid.get((row + 1, col - 1), 0)
-                + grid.get((row + 1, col), 0)
-                + grid.get((row + 1, col + 1), 0)
-            )
-            if value > n:
-                return value
-            print((row, col), value)
-            grid[(row, col)] = value
+        for row, col in next_position(start_row, start_col, side_size):
+            grid[(row, col)] = set_grid_value(grid, row, col)
 
-        print(f"end {size = }")
-        start_row = row
-        start_col = col + 1
-
-    return 0
+            if grid[(row, col)] > n:
+                return grid[(row, col)]
 
 
 if __name__ == "__main__":
 
-    print(solution(277678))
-
-    # for n in range(10, 25 + 1):
-    #     solution(n)
-
-    # print(solution(1))  # 1
-    # print(solution(12))  # 3
-    # print(solution(23))  # 2
-    # print(solution(1024))  # 31
-    # print(solution(277678))  #
+    # print(solution(277678)) # 279138
+    assert solution(277678) == 279138
