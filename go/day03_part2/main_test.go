@@ -7,44 +7,38 @@ import (
 
 func TestSolve(t *testing.T) {
 	testCases := []struct {
-		input    int
+		start    int
+		end      int
 		expected int
 	}{
-		// initial
-		{1, 0},
-		// next square of size 3
-		{2, 1},
-		{3, 2},
-		{4, 1},
-		{5, 2},
-		{6, 1},
-		{7, 2},
-		{8, 1},
-		{9, 2},
-		// next square of size 5
-		{10, 3},
-		{11, 2},
-		{12, 3},
-		{13, 4},
-		{14, 3},
-		{15, 2},
-		{16, 3},
-		{17, 4},
-		{18, 3},
-		{19, 2},
-		{20, 3},
-		{21, 4},
-		{22, 3},
-		{23, 2},
-		{24, 3},
-		{25, 4},
-		{1024, 31},
+		{1, 1, 2},
+		{2, 3, 4},
+		{4, 4, 5},
+		{5, 9, 10},
+		{10, 10, 11},
+		{11, 22, 23},
+		{23, 24, 25},
+		{25, 25, 26},
+		{26, 53, 54},
+		{54, 56, 57},
+		{57, 58, 59},
+		{59, 121, 122},
+		{122, 132, 133},
+		{133, 141, 142},
+		{142, 146, 147},
+		{147, 303, 304},
+		{304, 329, 330},
+		{330, 350, 351},
+		{351, 361, 362},
+		{362, 746, 747},
 	}
 	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("%d_should_be_%d", tc.input, tc.expected), func(t *testing.T) {
-			result := solution(tc.input)
-			if result != tc.expected {
-				t.Errorf("got %d; want %d", result, tc.expected)
+		t.Run(fmt.Sprintf("from_%d_to_%d_should_%d", tc.start, tc.end, tc.expected), func(t *testing.T) {
+			for parameter := tc.start; parameter <= tc.end; parameter++ {
+				result := solution(parameter)
+				if result != tc.expected {
+					t.Errorf("got %d; want %d", result, tc.expected)
+				}
 			}
 		})
 	}

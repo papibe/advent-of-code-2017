@@ -15,30 +15,8 @@ type Coord struct {
 
 type Grid map[Coord]int
 
-// type PositionIterator struct {
-// 	index int
-// 	steps int
-// 	row   int
-// 	col   int
-// }
-
-// func (pi *PositionIterator) next_position() (int, int) {
-// 	for {
-// 		for i := 0; i < 2; i++ {
-// 			for j := 0; j < pi.steps; j++ {
-// 				pi.row += DIRECTIONS[pi.index][0]
-// 				pi.col += DIRECTIONS[pi.index][1]
-// 				return pi.row, pi.col
-// 			}
-// 			pi.index = (pi.index + 1) % len(DIRECTIONS)
-// 		}
-// 		pi.steps += 1
-// 	}
-// }
-
-// https://go.dev/wiki/RangefuncExperiment
-// https://makubob.medium.com/exploring-the-upcoming-go-generators-344b2fb98ff9
-
+// Iterator
+// Rangefunc Experiment: https://go.dev/wiki/RangefuncExperiment
 func next_position(row, col int) func(func(int, Coord) bool) {
 
 	return func(yield func(int, Coord) bool) {
@@ -81,7 +59,6 @@ func solution(n int) int {
 	start_col := 0
 
 	grid[Coord{0, 0}] = 1
-	// next_position := next_position_generator(start_row, start_col)
 
 	for {
 		for _, coord := range next_position(start_row, start_col) {
