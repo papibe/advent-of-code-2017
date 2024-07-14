@@ -69,39 +69,40 @@ def get_unbalance(
     return balanced_weigth, unbalanced_weigth, unbalanced_node
 
 
-def balance_weight(node: TreeNode) -> Tuple[bool, int]:
+def balance_weight(node: TreeNode) -> Tuple[int, int]:
     if not node.children:
-        return True, node.weight
+        return node.weight, 0
 
     children_weights: Dict[int, List[TreeNode]] = {}
     for child in node.children:
-        is_balanced, weight = balance_weight(child)
+        weight, balance = balance_weight(child)
 
-        if not is_balanced:
-            return False, weight
+        # shotcut: once balance discovered stop calculating weight
+        if balance > 0:
+            return weight, balance
 
         if weight in children_weights:
             children_weights[weight].append(child)
         else:
             children_weights[weight] = [child]
 
-    if len(children_weights) != 1:
-        balanced_weigth, unbalanced_weigth, unbalanced_node = get_unbalance(
-            children_weights
-        )
+    # no balance problems
+    if len(children_weights) == 1:
+        total_children_weight: int = children_weights.popitem()[0] * len(node.children)
+        return node.weight + total_children_weight, 0
 
-        diff_weight: int = balanced_weigth - unbalanced_weigth
-        return False, unbalanced_node.weight + diff_weight
-
-    total_children_weight: int = children_weights.popitem()[0]
-
-    return True, node.weight + (len(node.children) * total_children_weight)
+    # balance needed
+    balanced_weigth, unbalanced_weigth, unbalanced_node = get_unbalance(
+        children_weights
+    )
+    diff_weight: int = balanced_weigth - unbalanced_weigth
+    return sum(children_weights.keys()), unbalanced_node.weight + diff_weight
 
 
 def solution(filename: str) -> int:
     root: TreeNode = parse(filename)
-    _, weight = balance_weight(root)
-    return weight
+    _, balance = balance_weight(root)
+    return balance
 
 
 if __name__ == "__main__":
