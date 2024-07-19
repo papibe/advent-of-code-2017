@@ -88,7 +88,7 @@ def group(data, index, level):
 def solve(data: str) -> int:
     score.reset()
     group(data, 0, 1)
-    return score.score
+    return score.garbage
 
 
 
