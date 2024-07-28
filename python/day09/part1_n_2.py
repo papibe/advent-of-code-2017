@@ -8,7 +8,7 @@ def parse(filename: str) -> str:
     return data[0]
 
 
-def collect_garbage(data: str, index: int) -> Tuple[int, int]:
+def garbage(data: str, index: int) -> Tuple[int, int]:
     garbage: int = 0
     while True:
         if data[index] == "!":
@@ -30,7 +30,7 @@ def flat_parse(data: str) -> Tuple[int, int]:
         if data[index] == "{":
             level += 1
         elif data[index] == "<":
-            index, garbage = collect_garbage(data, index + 1)
+            index, garbage = garbage(data, index + 1)
             total_garbage += garbage
         elif data[index] == "}":
             score += level
