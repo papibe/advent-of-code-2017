@@ -9,18 +9,18 @@ def parse(filename: str) -> str:
 
 
 def garbage(data: str, index: int) -> Tuple[int, int]:
-    garbage: int = 0
+    garbage_counter: int = 0
     while True:
         if data[index] == "!":
             index += 2
         elif data[index] == ">":
-            return index, garbage
+            return index, garbage_counter
         else:
-            garbage += 1
+            garbage_counter += 1
             index += 1
 
 
-def flat_parse(data: str) -> Tuple[int, int]:
+def parse_stream(data: str) -> Tuple[int, int]:
     score: int = 0
     index: int = 0
     level: int = 0
@@ -30,8 +30,8 @@ def flat_parse(data: str) -> Tuple[int, int]:
         if data[index] == "{":
             level += 1
         elif data[index] == "<":
-            index, garbage = garbage(data, index + 1)
-            total_garbage += garbage
+            index, garbage_counter = garbage(data, index + 1)
+            total_garbage += garbage_counter
         elif data[index] == "}":
             score += level
             level -= 1
@@ -42,18 +42,10 @@ def flat_parse(data: str) -> Tuple[int, int]:
 
 def solution(filename: str) -> Tuple[int, int]:
     data: str = parse(filename)
-    return flat_parse(data)
+    return parse_stream(data)
 
 
 if __name__ == "__main__":
-    # print(flat_parse("{}"))  # 1
-    # print(flat_parse("{{{}}}"))  # 6
-    # print(flat_parse("{{},{}}"))  # 5
-    # print(flat_parse("{{{},{},{{}}}}"))  # 16
-    # print(flat_parse("{<a>,<a>,<a>,<a>}"))  # 1
-    # print(flat_parse("{{<ab>},{<ab>},{<ab>},{<ab>}}"))  # 9
-    # print(flat_parse("{{<!!>},{<!!>},{<!!>},{<!!>}}"))  # 9
-    # print(flat_parse("{{<a!>},{<a!>},{<a!>},{<ab>}}"))  # 3
 
     solution1, solution2 = solution("./input.txt")
     print(f"Part1: {solution1}")  #
