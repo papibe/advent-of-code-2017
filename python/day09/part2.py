@@ -1,13 +1,12 @@
-import re
-from collections import deque
-from typing import List, Tuple
+from typing import List
 
 
-def parse(filename: str) -> List[str]:
+def parse(filename: str) -> str:
     with open(filename, "r") as fp:
         data: List[str] = fp.read().splitlines()
 
     return data[0]
+
 
 class Score:
     def __init__(self) -> None:
@@ -29,10 +28,6 @@ class Score:
 
 score: Score = Score()
 
-# def match(token: str):
-#     print(token)
-
-
 
 def collect_garbage(data: str, index: int) -> int:
     while True:
@@ -46,9 +41,8 @@ def collect_garbage(data: str, index: int) -> int:
             index += 1
 
 
-
-def thing(data, index, level):
-    if data[index] == '{':
+def thing(data: str, index: int, level: int) -> int:
+    if data[index] == "{":
         return group(data, index, level)
     elif data[index] == "<":
         return collect_garbage(data, index + 1)
@@ -59,9 +53,8 @@ def thing(data, index, level):
         raise Exception("bla3")
 
 
-
-def group(data, index, level):
-    if data[index] == '{':
+def group(data: str, index: int, level: int) -> int:
+    if data[index] == "{":
         while True:
             index = thing(data, index + 1, level + 1)
             if index > len(data) - 1:
@@ -91,20 +84,10 @@ def solve(data: str) -> int:
     return score.garbage
 
 
-
 def solution(filename: str) -> int:
-    data: List[str] = parse(filename)
+    data: str = parse(filename)
     return solve(data)
 
 
 if __name__ == "__main__":
-    print(solve("{}"))  # 1
-    print(solve("{{{}}}"))  # 6
-    print(solve("{{},{}}"))  # 5
-    print(solve("{{{},{},{{}}}}"))  # 16
-    print(solve("{<a>,<a>,<a>,<a>}"))  # 1
-    print(solve("{{<ab>},{<ab>},{<ab>},{<ab>}}"))  # 9
-    print(solve("{{<!!>},{<!!>},{<!!>},{<!!>}}"))  # 9
-    print(solve("{{<a!>},{<a!>},{<a!>},{<ab>}}"))  # 3
-
-    print(solution("./input.txt"))  #
+    print(solution("./input.txt"))  # 7284
