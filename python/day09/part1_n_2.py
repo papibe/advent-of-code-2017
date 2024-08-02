@@ -46,7 +46,6 @@ def solution(filename: str) -> Tuple[int, int]:
 
 
 if __name__ == "__main__":
-
     solution1, solution2 = solution("./input.txt")
-    print(f"Part1: {solution1}")  #
-    print(f"Part2: {solution2}")  #
+    print(f"Part1: {solution1}")  # 16869
+    print(f"Part2: {solution2}")  # 7284
