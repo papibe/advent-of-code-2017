@@ -28,31 +28,53 @@ class Elements:
 
 
     def apply(self, length: int) -> None:
-        head = self.current_postion.prev
+        tail = self.current_postion.prev
+        # print("tail", tail)
         current = self.current_postion
-        stack = []
+        next_ = current.next
+        nnext = next_.next
 
-        for _ in range(length):
-            stack.append(current)
+        prev = current
+
+        for i in range(length - 1):
+            # print(f"{prev=}, {current=}, {next_=}, {nnext=}")
+
+            current.prev = next_
+            next_.next = current
+
+            prev = current
+            current = next_
+            next_ = nnext
+            nnext = nnext.next
+
+            # next_ = current.next
+            # next_next = next_.next
+            # current.prev = next_
+            # next_.next = current
+            # prev = current
+            # current = next_next.prev
+            # print(f"   {prev=}, {current=}, {next_=}, {nnext=}\n")
+
+        # current.prev = prev
+
+        head = next_
+        # print("head", head)
+
+        tail.next = current
+        current.prev = tail
+
+        head.prev = self.current_postion
+        self.current_postion.next = head
+
+        self.current_postion = current
+        print(f"starts at {current}")
+
+        for _ in range(length + self.skip_size):
             current = current.next
-        tail = current
 
-        # print(head, tail, stack)
-
-        # invert
-        for index in range(len(stack) - 1):
-            stack[index].prev = stack[index + 1]
-            stack[index + 1].next = stack[index]
-
-        tail.next = stack[-1]
-        stack[-1].prev = tail
-
-        head.prev = stack[0]
-        stack[0].next = head
-
-
-
-
+        self.current_postion = current
+        # print(f"    head: {self.current_postion}")
+        self.skip_size += 1
 
 
     def print(self) -> None:
@@ -60,10 +82,13 @@ class Elements:
         start = self.current_postion
         current = start
         while current.next != start:
-            output.append(str(current.value))
+            if current == self.current_postion:
+                output.append(f"[{current.value}]")
+            else:
+                output.append(str(current.value))
             current = current.next
         output.append(str(current.value))
-        print(",".join(output))
+        print(" ".join(output))
 
 
 def parse(filename: str) -> List[str]:
@@ -78,9 +103,12 @@ def parse(filename: str) -> List[str]:
 
 def solve(elements: Elements, lengths : List[int]) -> int:
     for length in lengths:
+        print(length)
         elements.print()
         elements.apply(length)
+        print("    ", end="")
         elements.print()
+    return 0
 
 def solution(lengths: str, size: int) -> int:
     elements = Elements(size)
