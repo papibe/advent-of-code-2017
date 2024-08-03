@@ -1,8 +1,5 @@
-import re
-from collections import deque
-from typing import List
 from collections import namedtuple
-from typing import Dict
+from typing import Dict, List
 
 # Using hexagonal coordinates
 # Souce: https://www.redblobgames.com/grids/hexagons/
@@ -37,7 +34,7 @@ def solve(data: List[str]) -> int:
             current.r + delta.r,
             current.s + delta.s,
         )
-        max_distance: int = max(
+        max_distance = max(
             max_distance,
             max(abs(current.q), abs(current.r), abs(current.s)),
         )

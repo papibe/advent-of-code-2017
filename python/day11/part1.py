@@ -1,13 +1,10 @@
-import re
-from collections import deque
-from typing import List
 from collections import namedtuple
-from typing import Dict
+from typing import Dict, List
 
 # Using hexagonal coordinates
 # Souce: https://www.redblobgames.com/grids/hexagons/
 
-HexCoord = namedtuple('HexCoord', ['q', 'r', 's'])
+HexCoord = namedtuple("HexCoord", ["q", "r", "s"])
 
 DISTANCE: Dict[str, HexCoord] = {
     "n": HexCoord(0, 1, -1),
@@ -17,6 +14,7 @@ DISTANCE: Dict[str, HexCoord] = {
     "sw": HexCoord(-1, 0, 1),
     "nw": HexCoord(-1, 1, 0),
 }
+
 
 def parse(filename: str) -> List[str]:
     with open(filename, "r") as fp:
@@ -36,7 +34,8 @@ def solve(data: List[str]) -> int:
             current.s + delta.s,
         )
 
-    return max(abs(current.q), abs(current.r), abs(current.s))
+    return int(max(abs(current.q), abs(current.r), abs(current.s)))
+
 
 def solution(filename: str) -> int:
     data: List[str] = parse(filename)
@@ -44,8 +43,4 @@ def solution(filename: str) -> int:
 
 
 if __name__ == "__main__":
-    print(solve(["ne","ne","ne"]))  # 3
-    print(solve(["ne","ne","sw","sw"]))  # 0
-    print(solve(["ne","ne","s","s"]))  # 2
-    print(solve(["se","sw","se","sw","sw"]))  # 3
-    print(solution("./input.txt"))  # max_distance
+    print(solution("./input.txt"))  # 705

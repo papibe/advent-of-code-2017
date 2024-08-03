@@ -1,21 +1,23 @@
 import pytest
 
-from part1 import is_valid
+from part1 import solve
 
 
 @pytest.mark.parametrize(
-    "passphrases,expected",
+    "directions,expected",
     [
-        ("aa bb cc dd ee", True),
-        ("aa bb cc dd aa", False),
-        ("aa bb cc dd aaa", True),
+        (["ne","ne","ne"], 3),
+        (["ne","ne","sw","sw"], 0),
+        (["ne","ne","s","s"], 2),
+        (["se","sw","se","sw","sw"], 3),
     ],
     ids=[
-        "aa_bb_cc_dd_ee_should_be_True",
-        "aa_bb_cc_dd_aa_should_be_False",
-        "aa_bb_cc_dd_aaa_should_be_True",
+        '["ne","ne","ne"]_should_be_3',
+        '["ne","ne","sw","sw"]_should_be_0',
+        '["ne","ne","s","s"]_should_be_2',
+        '["se","sw","se","sw","sw"]_should_be_3',
     ],
 )
-def test_part1(passphrases: str, expected: int) -> None:
-    result: int = is_valid(passphrases)
+def test_part1(directions: str, expected: int) -> None:
+    result: int = solve(directions)
     assert result == expected, f"got {result}, needs {expected}"
