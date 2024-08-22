@@ -2,62 +2,40 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
-func parse(filename string) map[int]int {
-	data, err := os.ReadFile(filename)
-
-	if err != nil {
-		panic("file error")
-	}
-	lines := strings.Split(strings.Trim(string(data), "\n"), "\n")
-
-	re := regexp.MustCompile(`(?P<depth>\d+): (?P<range>\d+)`)
-	firewall := make(map[int]int)
-
-	for _, line := range lines {
-		matches := re.FindStringSubmatch(line)
-		depth, _ := strconv.Atoi(matches[1])
-		range_, _ := strconv.Atoi(matches[2])
-		firewall[depth] = range_
-	}
-	return firewall
+var ONES = map[rune]int{
+	'0': 0, // 0000
+	'1': 1, // 0001
+	'2': 1, // 0010
+	'3': 2, // 0011
+	'4': 1, // 0100
+	'5': 2, // 0101
+	'6': 2, // 0110
+	'7': 3, // 0111
+	'8': 1, // 1000
+	'9': 2, // 1001
+	'a': 2, // 1010
+	'b': 3, // 1011
+	'c': 2, // 1100
+	'd': 3, // 1101
+	'e': 3, // 1110
+	'f': 4, // 1111
 }
 
-func is_at_top(picosecond int, scanner_range int) bool {
-	return (picosecond % (2*scanner_range - 2)) == 0
-}
-
-func solve(firewall map[int]int) int {
-	severity := 0
-	picosecond := 0 // also position
-	visited := make(map[int]bool)
-
-	for len(visited) < len(firewall) {
-		range_, is_in_firewall := firewall[picosecond]
-		if is_in_firewall {
-			depth := picosecond
-			visited[depth] = true
-
-			if is_at_top(picosecond, range_) {
-				severity += depth * range_
-			}
+func solution(input string) int {
+	used_squares := 0
+	for row_number := 0; row_number < 128; row_number++ {
+		row_input := fmt.Sprintf("%s-%d", input, row_number)
+		row_hash := knot_hash(row_input, 256)
+		for _, char := range row_hash {
+			used_squares += ONES[char]
 		}
-		picosecond++
 	}
-	return severity
-}
-
-func solution(filename string) int {
-	firewall := parse(filename)
-	return solve(firewall)
+	return used_squares
 }
 
 func main() {
-	fmt.Println(solution("./example.txt")) // 24
-	fmt.Println(solution("./input.txt"))   // 1900
+	fmt.Println(solution("flqrgnkx")) // 8108
+	fmt.Println(solution("hxtvlmkl")) // 8214
 }
