@@ -19,15 +19,10 @@ class Generator:
                 return self.value
 
 
-def generator(previous_value: int, factor: int) -> int:
-    return (previous_value * factor) % DIVISOR
-
-
 def solve(gena: Generator, genb: Generator, num_pairs: int) -> int:
     counter: int = 0
 
     for _ in range(num_pairs):
-
         if (gena.next() & MASK) == (genb.next() & MASK):
             counter += 1
 
