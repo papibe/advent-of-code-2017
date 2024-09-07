@@ -14,7 +14,6 @@ class Buffer:
         self.head: Node = node
         self.size: int = 1
         self.spinlock: int = spinlock
-        self.zero: Node = node
 
     def insert(self, value: int) -> None:
         # round up spinlock
