@@ -1,13 +1,9 @@
-import re
-from collections import deque
-from typing import Deque, Dict, List, Match, Optional, Set, Tuple
-
-
 class Node:
     def __init__(self, value: int) -> None:
         self.value: int = value
-        self.next: Node = None
-        self.prev: Node = None
+        self.next: Node = None  # type: ignore
+        self.prev: Node = None  # type: ignore
+
 
 class Buffer:
     def __init__(self, spinlock: int) -> None:
@@ -36,28 +32,16 @@ class Buffer:
         self.head = node
         self.size += 1
 
-    def print(self) -> None:
-        p: Node = self.zero
-        for _ in range(self.size):
-            if p == self.head:
-                print(f"({p.value})", end=" ")
-            else:
-                print(p.value, end=" ")
-            p = p.next
-
-        print()
-
 
 def solution(spinlock: int) -> int:
     buffer: Buffer = Buffer(spinlock)
 
     for value in range(1, 50000000 + 1):
-    # for value in range(1, 10):
         buffer.insert(value)
-        # buffer.print()
 
     return buffer.zero.next.value
 
 
 if __name__ == "__main__":
+    # it takes 30mins
     print(solution(371))  # 39170601

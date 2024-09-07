@@ -1,13 +1,9 @@
-import re
-from collections import deque
-from typing import Deque, Dict, List, Match, Optional, Set, Tuple
-
-
 class Node:
     def __init__(self, value: int) -> None:
         self.value: int = value
-        self.next: Node = None
-        self.prev: Node = None
+        self.next: Node = None  # type: ignore
+        self.prev: Node = None  # type: ignore
+
 
 class Buffer:
     def __init__(self, spinlock: int) -> None:
@@ -21,44 +17,35 @@ class Buffer:
         self.zero: Node = node
 
     def insert(self, value: int) -> None:
+        # round up spinlock
         position: int = self.spinlock % self.size
-        p: Node = self.head
-        for _ in range(position):
-            p = p.next
 
+        # find where to insert
+        current: Node = self.head
+        for _ in range(position):
+            current = current.next
+
+        # insert
         node: Node = Node(value)
-        next_: Node = p.next
-        p.next = node
-        node.prev = p
+        next_: Node = current.next
+        current.next = node
+        node.prev = current
         node.next = next_
         next_.prev = node
 
         self.head = node
         self.size += 1
 
-    def print(self) -> None:
-        p: Node = self.zero
-        for _ in range(self.size):
-            if p == self.head:
-                print(f"({p.value})", end=" ")
-            else:
-                print(p.value, end=" ")
-            p = p.next
-
-        print()
-
 
 def solution(spinlock: int) -> int:
     buffer: Buffer = Buffer(spinlock)
 
     for value in range(1, 2017 + 1):
-    # for value in range(1, 10):
         buffer.insert(value)
-        # buffer.print()
 
     return buffer.head.next.value
 
 
 if __name__ == "__main__":
-    print(solution(3))  # 0
-    print(solution(371))  # 0
+    print(solution(3))  # 638
+    print(solution(371))  # 1311

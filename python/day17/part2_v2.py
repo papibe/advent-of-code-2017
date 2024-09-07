@@ -1,9 +1,3 @@
-import re
-from collections import deque
-from typing import Deque, Dict, List, Match, Optional, Set, Tuple
-
-
-
 class Buffer:
     def __init__(self, spinlock: int) -> None:
 
@@ -37,5 +31,7 @@ def solution(spinlock: int) -> int:
 
     return buffer.next_to_zero
 
+
 if __name__ == "__main__":
+    # it takes 4 secs
     print(solution(371))  # 39170601
