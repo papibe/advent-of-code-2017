@@ -69,9 +69,14 @@ func run(
 	program_id int,
 	read_channel chan int,
 	write_channel chan int,
+	return_channel chan int,
 	program []Instruction,
 	registers map[string]int,
+	wg *sync.WaitGroup,
 ) int {
+
+	defer wg.Done()
+
 	var value int
 	pointer := 0
 	send_times := 0
@@ -88,9 +93,6 @@ func run(
 				value, _ = strconv.Atoi(instr.register)
 			}
 			send_times++
-			// if program_id == 1 {
-			// 	fmt.Println(send_times)
-			// }
 			write_channel <- value
 
 		case SET:
@@ -129,11 +131,12 @@ func run(
 			select {
 			case value = <-read_channel:
 				registers[instr.register] = value
-			case <-time.After(10 * time.Millisecond):
-				// close(read_channel)
-				// close(write_channel)
-				fmt.Println("timeout", program_id, send_times)
-				return 0
+			case <-time.After(5 * time.Millisecond):
+				if program_id == 1 {
+					return_channel <- send_times
+				}
+				close(read_channel)
+				return send_times
 			}
 
 		case JGZ:
@@ -168,23 +171,25 @@ func solution(filename string) int {
 		registers2[k] = v
 	}
 
-	channel_a := make(chan int, 100)
-	channel_b := make(chan int, 100)
+	channel_a := make(chan int, 75)
+	channel_b := make(chan int, 75)
+	return_channel := make(chan int, 1)
 
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	go run(0, channel_a, channel_b, program, registers)
+	go run(0, channel_a, channel_b, return_channel, program, registers, &wg)
 	wg.Add(1)
-	go run(1, channel_b, channel_a, program, registers2)
+	go run(1, channel_b, channel_a, return_channel, program, registers2, &wg)
 
 	wg.Wait()
-	close(channel_a)
-	close(channel_b)
-	return 0
+	ret_val := <-return_channel
+	close(return_channel)
+
+	return ret_val
 }
 
 func main() {
-	// fmt.Println(solution("./example2.txt")) // 3
-	fmt.Println(solution("./input.txt")) // 7366
+	fmt.Println(solution("./example2.txt")) // 3
+	fmt.Println(solution("./input.txt"))    // 7366
 }
