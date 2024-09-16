@@ -136,11 +136,11 @@ async def solve(program: List[Instruction], registers: Dict[str, int]) -> int:
     registers_0: Dict[str, int] = registers.copy()
     registers_1: Dict[str, int] = registers.copy()
 
-    queue_0: asyncio.Queue[int] = asyncio.Queue()  # read for id0 and write for id1
-    queue_1: asyncio.Queue[int] = asyncio.Queue()  # write for id0 and read for id1
+    queue_a: asyncio.Queue[int] = asyncio.Queue()  # read for id0 and write for id1
+    queue_b: asyncio.Queue[int] = asyncio.Queue()  # write for id0 and read for id1
 
-    program_0 = asyncio.create_task(run(0, queue_0, queue_1, program, registers_0))
-    program_1 = asyncio.create_task(run(1, queue_1, queue_0, program, registers_1))
+    program_0 = asyncio.create_task(run(0, queue_a, queue_b, program, registers_0))
+    program_1 = asyncio.create_task(run(1, queue_b, queue_a, program, registers_1))
 
     _: int = await program_0
     send_1: int = await program_1
