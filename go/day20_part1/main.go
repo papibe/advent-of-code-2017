@@ -9,11 +9,6 @@ import (
 	"strings"
 )
 
-type Coord struct {
-	row int
-	col int
-}
-
 type Particle struct {
 	x  int
 	y  int
