@@ -62,11 +62,31 @@ def transformation(art, orientation):
         return art
 
 
-def get_transformations(art: Art) -> List[Art]:
+def get_transformations(art):
+    transformations: List[Art] = [deepcopy(art)]
+    # transformations: List[Art] = []
+
+    for _ in range(len(["90", "180", "270"])):
+        art = rot90(art)
+        transformations.append(art)
+
+    art = rot90(art)
+    art = hflip(art)
+    transformations.append(art)
+
+    for _ in range(len(["90f", "180f", "270f"])):
+        art = rot90(art)
+        transformations.append(art)
+
+    return transformations
+
+
+def get_transformations__(art: Art) -> List[Art]:
     transformations: List[Art] = []
 
     for trans in TRANSFORMATIONS:
-        transformations.append(transformation(deepcopy(art), trans))
+        # transformations.append(transformation(deepcopy(art), trans))
+        transformations.append(transformation(art, trans))
 
     return transformations
 
@@ -106,17 +126,25 @@ def get_divisions(art: Art, number: int) -> List[Art]:
 
     return divisions
 
+cache = {}
+
 def enhancement_rule(art: Art, rules: Rules, number: int) -> None:
 
     divisions: List[Art] = get_divisions(art, number)
 
     transformations: List[str] = []
     for division in divisions:
+        division_str: str = stringify(division)
+        if division_str in cache:
+            transformations.append(cache[division_str])
+            continue
+
         transformed: List[Art] = get_transformations(division)
         for transformation in transformed:
             string_rep: str = stringify(transformation)
             if string_rep in rules:
                 transformations.append(rules[string_rep])
+                cache[division_str] = rules[string_rep]
                 break
         else:
             raise Exception("wtf")
@@ -161,14 +189,13 @@ def count_pixels(art: Art) -> int:
 def solve(art: Art, iterations: int, rules: Rules) -> int:
 
     for cycle in range(iterations):
+        # print(cycle)
         size: int = len(art)
 
         if size % 2 == 0:
             art = enhancement_rule(art, rules, 2)
         elif size % 3 == 0:
             art = enhancement_rule(art, rules, 3)
-        else:
-            raise Exception("no enhancenment")
 
     return count_pixels(art)
 
@@ -179,5 +206,4 @@ def solution(filename: str, iterations: int) -> int:
     return solve(art, iterations, rules)
 
 if __name__ == "__main__":
-    print(solution("example.txt", 2))  # 12
-    print(solution("input.txt", 5))  # 123
+    print(solution("input.txt", 18))  # 123
