@@ -1,7 +1,5 @@
-import re
-from collections import deque
-from typing import Deque, Dict, List, Match, Optional, Set, Tuple
 from copy import deepcopy
+from typing import Dict, List
 
 Art = List[List[str]]
 Rules = Dict[str, str]
@@ -12,9 +10,8 @@ INITIAL_ART: Art = [
     ["#", "#", "#"],
 ]
 
-TRANSFORMATIONS: List[str] = [
-    "0", "90", "180", "270", "hflip", "90f", "180f", "270f"
-]
+TRANSFORMATIONS: List[str] = ["0", "90", "180", "270", "hflip", "90f", "180f", "270f"]
+
 
 def parse(filename: str) -> Rules:
     with open(filename, "r") as fp:
@@ -27,24 +24,26 @@ def parse(filename: str) -> Rules:
 
     return rules
 
+
 def rot90(art: Art) -> Art:
     n: int = len(art)
-    rot: Art = [[None]*n for _ in range(n)]
+    rot: Art = [[""] * n for _ in range(n)]
     for i in range(n):
         for j in range(n):
             rot[i][j] = art[n - j - 1][i]
     return rot
 
+
 def hflip(tile: Art) -> Art:
     n: int = len(tile)
-    flip: Art = [[None]*n for _ in range(n)]
+    flip: Art = [[""] * n for _ in range(n)]
     for i in range(n):
         for j in range(n):
             flip[i][j] = tile[n - i - 1][j]
     return flip
 
 
-def transformation(art, orientation):
+def transformation(art: Art, orientation: str) -> Art:
     standard: Dict[str, int] = {"0": 0, "90": 1, "180": 2, "270": 3}
     if orientation in standard:
         for _ in range(standard[orientation]):
@@ -61,8 +60,10 @@ def transformation(art, orientation):
             art = rot90(art)
         return art
 
+    return art
 
-def get_transformations(art):
+
+def get_transformations(art: Art) -> List[Art]:
     transformations: List[Art] = [deepcopy(art)]
     # transformations: List[Art] = []
 
@@ -95,6 +96,7 @@ def print_art(art: Art) -> None:
     for row in art:
         print("".join(row))
 
+
 def stringify(art: Art) -> str:
     output: List[str] = []
     for row in art:
@@ -105,7 +107,7 @@ def stringify(art: Art) -> str:
 def get_divisions(art: Art, number: int) -> List[Art]:
     size: int = len(art)
     n_divitions: int = size // number
-    divisions: List[art] = []
+    divisions: List[Art] = []
 
     for base_row in range(n_divitions):
 
@@ -126,35 +128,37 @@ def get_divisions(art: Art, number: int) -> List[Art]:
 
     return divisions
 
-cache = {}
 
-def enhancement_rule(art: Art, rules: Rules, number: int) -> None:
+cache: Dict[str, str] = {}
+
+
+def enhancement_rule(art: Art, rules: Rules, number: int) -> Art:
 
     divisions: List[Art] = get_divisions(art, number)
 
     transformations: List[str] = []
     for division in divisions:
-        division_str: str = stringify(division)
-        if division_str in cache:
-            transformations.append(cache[division_str])
+        key: str = stringify(division)
+        if key in cache:
+            transformations.append(cache[key])
             continue
 
-        transformed: List[Art] = get_transformations(division)
-        for transformation in transformed:
-            string_rep: str = stringify(transformation)
+        rotations: List[Art] = get_transformations(division)
+        for rotation in rotations:
+            string_rep: str = stringify(rotation)
             if string_rep in rules:
                 transformations.append(rules[string_rep])
-                cache[division_str] = rules[string_rep]
+                cache[key] = rules[string_rep]
                 break
         else:
-            raise Exception("wtf")
+            raise Exception("not able to find a rule")
 
     size: int = len(art)
     n_divitions: int = size // number
 
     # join pieces
     new_size = (number + 1) * n_divitions
-    art = [["+"]*new_size for _ in range(new_size)]
+    art = [["+"] * new_size for _ in range(new_size)]
     transformation_index: int = 0
 
     for base_row in range(n_divitions):
@@ -171,7 +175,7 @@ def enhancement_rule(art: Art, rules: Rules, number: int) -> None:
                     art[row][col] = transformation[trans_index]
                     trans_index += 1
 
-                trans_index += 1    # skip "/"
+                trans_index += 1  # skip "/"
 
     return art
 
@@ -199,11 +203,13 @@ def solve(art: Art, iterations: int, rules: Rules) -> int:
 
     return count_pixels(art)
 
+
 def solution(filename: str, iterations: int) -> int:
     art: Art = INITIAL_ART
     rules: Rules = parse(filename)
 
     return solve(art, iterations, rules)
 
+
 if __name__ == "__main__":
-    print(solution("input.txt", 18))  # 123
+    print(solution("input.txt", 18))  # 1984683
