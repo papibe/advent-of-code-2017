@@ -10,6 +10,7 @@ INITIAL_ART: Art = [
     ["#", "#", "#"],
 ]
 
+
 def parse(filename: str) -> Rules:
     with open(filename, "r") as fp:
         data: List[str] = fp.read().splitlines()
@@ -24,7 +25,7 @@ def parse(filename: str) -> Rules:
 
 def rot90(art: Art) -> Art:
     n: int = len(art)
-    rot: Art = [[""] * n for _ in range(n)]
+    rot: Art = [[" "] * n for _ in range(n)]
     for i in range(n):
         for j in range(n):
             rot[i][j] = art[n - j - 1][i]
@@ -33,7 +34,7 @@ def rot90(art: Art) -> Art:
 
 def hflip(tile: Art) -> Art:
     n: int = len(tile)
-    flip: Art = [[""] * n for _ in range(n)]
+    flip: Art = [[" "] * n for _ in range(n)]
     for i in range(n):
         for j in range(n):
             flip[i][j] = tile[n - i - 1][j]
@@ -119,7 +120,7 @@ def enhancement_rule(art: Art, rules: Rules, number: int) -> Art:
 
     # join pieces
     new_size = (number + 1) * n_divitions
-    art = [["+"] * new_size for _ in range(new_size)]
+    art = [[" "] * new_size for _ in range(new_size)]
     transformation_index: int = 0
 
     for base_row in range(n_divitions):
