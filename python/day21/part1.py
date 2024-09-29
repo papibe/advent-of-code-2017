@@ -10,8 +10,6 @@ INITIAL_ART: Art = [
     ["#", "#", "#"],
 ]
 
-TRANSFORMATIONS: List[str] = ["0", "90", "180", "270", "hflip", "90f", "180f", "270f"]
-
 
 def parse(filename: str) -> Rules:
     with open(filename, "r") as fp:
@@ -43,38 +41,22 @@ def hflip(tile: Art) -> Art:
     return flip
 
 
-def transformation(art: Art, orientation: str) -> Art:
-    standard: Dict[str, int] = {"0": 0, "90": 1, "180": 2, "270": 3}
-    if orientation in standard:
-        for _ in range(standard[orientation]):
-            art = rot90(art)
-        return art
-
-    if orientation == "hflip":
-        return hflip(art)
-
-    standardF: Dict[str, int] = {"_": 0, "90f": 1, "180f": 2, "270f": 3}
-    if orientation in standardF:
-        art = hflip(art)
-        for _ in range(standardF[orientation]):
-            art = rot90(art)
-        return art
-
-    return art
-
-
 def get_transformations(art: Art) -> List[Art]:
-    transformations: List[Art] = []
+    transformations: List[Art] = [deepcopy(art)]
 
-    for trans in TRANSFORMATIONS:
-        transformations.append(transformation(deepcopy(art), trans))
+    for _ in range(len(["90", "180", "270"])):
+        art = rot90(art)
+        transformations.append(art)
+
+    art = rot90(art)
+    art = hflip(art)
+    transformations.append(art)
+
+    for _ in range(len(["90f", "180f", "270f"])):
+        art = rot90(art)
+        transformations.append(art)
 
     return transformations
-
-
-def print_art(art: Art) -> None:
-    for row in art:
-        print("".join(row))
 
 
 def stringify(art: Art) -> str:
@@ -122,7 +104,7 @@ def enhancement_rule(art: Art, rules: Rules, number: int) -> Art:
                 transformations.append(rules[string_rep])
                 break
         else:
-            raise Exception("wtf")
+            raise Exception("not able to find a rule")
 
     size: int = len(art)
     n_divitions: int = size // number
@@ -163,15 +145,13 @@ def count_pixels(art: Art) -> int:
 
 def solve(art: Art, iterations: int, rules: Rules) -> int:
 
-    for cycle in range(iterations):
+    for _ in range(iterations):
         size: int = len(art)
 
         if size % 2 == 0:
             art = enhancement_rule(art, rules, 2)
         elif size % 3 == 0:
             art = enhancement_rule(art, rules, 3)
-        else:
-            raise Exception("no enhancenment")
 
     return count_pixels(art)
 

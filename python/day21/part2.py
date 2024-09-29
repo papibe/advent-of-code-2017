@@ -10,9 +10,6 @@ INITIAL_ART: Art = [
     ["#", "#", "#"],
 ]
 
-TRANSFORMATIONS: List[str] = ["0", "90", "180", "270", "hflip", "90f", "180f", "270f"]
-
-
 def parse(filename: str) -> Rules:
     with open(filename, "r") as fp:
         data: List[str] = fp.read().splitlines()
@@ -43,29 +40,8 @@ def hflip(tile: Art) -> Art:
     return flip
 
 
-def transformation(art: Art, orientation: str) -> Art:
-    standard: Dict[str, int] = {"0": 0, "90": 1, "180": 2, "270": 3}
-    if orientation in standard:
-        for _ in range(standard[orientation]):
-            art = rot90(art)
-        return art
-
-    if orientation == "hflip":
-        return hflip(art)
-
-    standardF: Dict[str, int] = {"_": 0, "90f": 1, "180f": 2, "270f": 3}
-    if orientation in standardF:
-        art = hflip(art)
-        for _ in range(standardF[orientation]):
-            art = rot90(art)
-        return art
-
-    return art
-
-
 def get_transformations(art: Art) -> List[Art]:
     transformations: List[Art] = [deepcopy(art)]
-    # transformations: List[Art] = []
 
     for _ in range(len(["90", "180", "270"])):
         art = rot90(art)
@@ -80,21 +56,6 @@ def get_transformations(art: Art) -> List[Art]:
         transformations.append(art)
 
     return transformations
-
-
-def get_transformations__(art: Art) -> List[Art]:
-    transformations: List[Art] = []
-
-    for trans in TRANSFORMATIONS:
-        # transformations.append(transformation(deepcopy(art), trans))
-        transformations.append(transformation(art, trans))
-
-    return transformations
-
-
-def print_art(art: Art) -> None:
-    for row in art:
-        print("".join(row))
 
 
 def stringify(art: Art) -> str:
@@ -192,8 +153,7 @@ def count_pixels(art: Art) -> int:
 
 def solve(art: Art, iterations: int, rules: Rules) -> int:
 
-    for cycle in range(iterations):
-        # print(cycle)
+    for _ in range(iterations):
         size: int = len(art)
 
         if size % 2 == 0:
