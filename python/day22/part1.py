@@ -57,12 +57,12 @@ def solve(carrier: Carrier, cluster: Set[Node], bursts: int) -> int:
         else:
             carrier.turn_left()
 
-        # determine infect
+        # determine infection
         if position not in cluster:
             infections += 1
-            cluster.add(carrier.position())
+            cluster.add(position)
         else:
-            cluster.remove(carrier.position())
+            cluster.remove(position)
 
         # actual move
         carrier.move()
@@ -71,8 +71,8 @@ def solve(carrier: Carrier, cluster: Set[Node], bursts: int) -> int:
 
 
 def solution(filename: str, bursts: int) -> int:
-    cluster, nodes = parse(filename)
-    return solve(cluster, nodes, bursts)
+    carrier, cluster = parse(filename)
+    return solve(carrier, cluster, bursts)
 
 
 if __name__ == "__main__":
