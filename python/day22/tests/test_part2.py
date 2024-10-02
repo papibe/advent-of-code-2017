@@ -1,25 +1,19 @@
 import pytest
 
-from part2 import solve
+from part2 import solution
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    "nodes_file,bursts,expected",
     [
-        ("1212", 6),
-        ("1221", 0),
-        ("123425", 4),
-        ("123123", 12),
-        ("12131415", 4),
+        ("example.txt", 100, 26),
+        ("example.txt", 10_000_000, 2511944),
     ],
     ids=[
-        "1212_should_be_6",
-        "1221_should_be_0",
-        "123425_should_be_4",
-        "123123_should_be_12",
-        "12131415_should_be_4",
+        "example_100_bursts_should_be_26",
+        "example_10_000_000_bursts_should_be_2511944",
     ],
 )
-def test_solve(input: str, expected: int) -> None:
-    result: int = solve(input)
+def test_part1(nodes_file: str, bursts: int, expected: int) -> None:
+    result: int = solution(nodes_file, bursts)
     assert result == expected, f"got {result}, needs {expected}"

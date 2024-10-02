@@ -1,93 +1,70 @@
-from typing import List, Dict, Set, Tuple
-from dataclasses import dataclass
 from collections import namedtuple
+from typing import List, Set, Tuple
 
 Node = namedtuple("Node", ["row", "col"])
-Grid = Set[Node]
+Cluster = Set[Node]
 
-RIGHT_ROT: Dict[Node, Node] = {
-    Node(-1, 0): Node(0, 1),
-    Node(0, 1): Node(1, 0),
-    Node(1, 0): Node(0, -1),
-    Node(0, -1): Node(-1, 0),
-}
-
-LEFT_ROT: Dict[Node, Node] = {
-    Node(-1, 0): Node(0, -1),
-    Node(0, -1): Node(1, 0),
-    Node(1, 0): Node(0, 1),
-    Node(0, 1): Node(-1, 0),
-}
+INFECTED_NODE: str = "#"
 
 
-class Infected:
+class Carrier:
     def __init__(self, row: int, col: int) -> None:
         self.row: int = row
         self.col: int = col
-        self.dir: Node = Node(-1, 0) # -> 1, 1 -> (1, 0) -> (0, -1)
+        self.dir: Node = Node(-1, 0)  # -> 1, 1 -> (1, 0) -> (0, -1)
 
     def position(self) -> Node:
         return Node(self.row, self.col)
 
     def turn_right(self) -> None:
-        self.dir = RIGHT_ROT[self.dir]
+        self.dir = Node(self.dir.col, -self.dir.row)
 
     def turn_left(self) -> None:
-        # print(self.dir)
-        self.dir = LEFT_ROT[self.dir]
-        # print(self.dir)
+        self.dir = Node(-self.dir.col, self.dir.row)
 
     def reverse(self) -> None:
         self.dir = Node(-self.dir.row, -self.dir.col)
-
 
     def move(self) -> None:
         self.row += self.dir.row
         self.col += self.dir.col
 
-    def __repr__(self) -> str:
-        s: str = f"{self.row}, {self.col} -> {self.dir.row}, {self.dir.col}"
-        return s
 
-def parse(filename: str) -> Tuple[Infected, Grid]:
+def parse(filename: str) -> Tuple[Carrier, Cluster]:
     with open(filename, "r") as file:
         data: List[str] = file.read().splitlines()
 
-    nodes: Set[Node] = set()
+    cluster: Set[Node] = set()
 
     rows: int = len(data)
     cols: int = len(data[0])
     for row in range(rows):
         for col in range(cols):
-            if data[row][col] == "#":
-                nodes.add(Node(row, col))
+            if data[row][col] == INFECTED_NODE:
+                cluster.add(Node(row, col))
 
-    # print(nodes)
-    current = Infected(rows // 2, cols // 2)
+    carrier = Carrier(rows // 2, cols // 2)
 
-    return current, nodes    
+    return carrier, cluster
 
 
-def solve(current: Infected, infected: Set[Node]) -> int:
+def solve(current: Carrier, infected: Set[Node], bursts: int) -> int:
     infections: int = 0
     weakened: Set[Node] = set()
     flagged: Set[Node] = set()
 
-    # print(current)
-    # print(nodes)
-    # print()
-    for _ in range(10_000_000):
-        # direction
+    for _ in range(bursts):
         position = current.position()
-        
+
         if position in weakened:
             weakened.remove(position)
             infected.add(position)
+
             infections += 1
-        
+
         elif position in infected:
             current.turn_right()
-    
+
             infected.remove(position)
             flagged.add(position)
 
@@ -95,26 +72,22 @@ def solve(current: Infected, infected: Set[Node]) -> int:
             current.reverse()
 
             flagged.remove(position)
-        
+
         else:
             current.turn_left()
 
             weakened.add(position)
 
-
         current.move()
-        # print(current)
-        # print(nodes)
-        # print()
 
     return infections
 
 
-def solution(filename: str) -> int:
-    current, nodes = parse(filename)
-    return solve(current, nodes)
+def solution(filename: str, bursts: int) -> int:
+    carrier, nodes = parse(filename)
+    return solve(carrier, nodes, bursts)
 
 
 if __name__ == "__main__":
     # print(solution("./example.txt"))  # 2511944
-    print(solution("./input.txt"))  # 2511991
+    print(solution("./input.txt", 10_000_000))  # 2511991
