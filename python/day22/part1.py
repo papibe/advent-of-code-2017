@@ -26,10 +26,6 @@ class Carrier:
         self.row += self.dir.row
         self.col += self.dir.col
 
-    def __repr__(self) -> str:
-        s: str = f"{self.row}, {self.col} -> {self.dir.row}, {self.dir.col}"
-        return s
-
 
 def parse(filename: str) -> Tuple[Carrier, Cluster]:
     with open(filename, "r") as file:
