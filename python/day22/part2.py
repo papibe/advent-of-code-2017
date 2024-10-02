@@ -48,13 +48,13 @@ def parse(filename: str) -> Tuple[Carrier, Cluster]:
     return carrier, cluster
 
 
-def solve(current: Carrier, infected: Set[Node], bursts: int) -> int:
+def solve(carrier: Carrier, infected: Set[Node], bursts: int) -> int:
     infections: int = 0
     weakened: Set[Node] = set()
     flagged: Set[Node] = set()
 
     for _ in range(bursts):
-        position = current.position()
+        position = carrier.position()
 
         if position in weakened:
             weakened.remove(position)
@@ -63,31 +63,30 @@ def solve(current: Carrier, infected: Set[Node], bursts: int) -> int:
             infections += 1
 
         elif position in infected:
-            current.turn_right()
+            carrier.turn_right()
 
             infected.remove(position)
             flagged.add(position)
 
         elif position in flagged:
-            current.reverse()
+            carrier.reverse()
 
             flagged.remove(position)
 
         else:
-            current.turn_left()
+            carrier.turn_left()
 
             weakened.add(position)
 
-        current.move()
+        carrier.move()
 
     return infections
 
 
 def solution(filename: str, bursts: int) -> int:
-    carrier, nodes = parse(filename)
-    return solve(carrier, nodes, bursts)
+    carrier, infected = parse(filename)
+    return solve(carrier, infected, bursts)
 
 
 if __name__ == "__main__":
-    # print(solution("./example.txt"))  # 2511944
     print(solution("./input.txt", 10_000_000))  # 2511991
