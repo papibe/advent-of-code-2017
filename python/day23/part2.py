@@ -11,8 +11,6 @@ g = 2
 while g != 0:
 
     f = 1
-    d = 2
-
     for d in range(2, b + 1):
         # d * e - b == 0
         if b % d == 0 and 2 <= (b // d) <= b:
@@ -24,4 +22,4 @@ while g != 0:
     g = b - c
     b -= -17
 
-print(h)
+print(h)    # 903
